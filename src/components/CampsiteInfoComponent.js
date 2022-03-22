@@ -1,10 +1,121 @@
 
-import React from 'react';
-import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import React, {Component} from 'react'; 
+import { Card, CardImg, CardText, CardBody, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Label, Col } from 'reactstrap';
+import { Control, LocalForm, Errors } from 'react-redux-form';
 import { Link } from 'react-router-dom';
+import Alert from 'reactstrap/lib/Alert';
+
+const maxLength = len => val => !val || (val.length <= len);
+const minLength = len => val => val && (val.length >= len);
+const required = val => val && val.length;
+
+    class CommentForm extends Component {     
+        constructor(props) {
+            super(props);
+
+            this.state = {
+                isModalOpen: false
+
+            };
+            this.toggleModal = this.toggleModal.bind(this);
+        }
 
 
-   function RenderCampsite({campsite}){
+        toggleModal() {
+            this.setState ({
+                isModalOpen: !this.state.isModalOpen
+            });
+        }
+        
+
+
+        formSubmitted(values) {
+            console.log("Current state is: " + JSON.stringify(values));
+            alert("Current state is: " + JSON.stringify(values));
+        }
+
+    render(){
+        return (
+            <React.Fragment>
+                <div>
+                    <Button outline onClick={this.toggleModal}><i className="fa fa-pencil fa-lg" />
+                        Submit Comment
+                    </Button>
+                    <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+                        <ModalHeader toggle={this.toggleModal}>Enter Stuff</ModalHeader>
+                        <ModalBody>
+                    <LocalForm onSubmit={values => this.formSubmitted(values)}>
+                            <div className="form-group">
+                                <Label htmlFor="rating" md={2}>Rating</Label>
+                                <Control.select 
+
+                                        model=".rating" 
+                                        id="rating" 
+                                        name="rating"
+                                        placeholder="Rating"
+                                        className="form-control"
+                                    >
+                                    <option value="1"> 1 </option>
+                                    <option value="2"> 2 </option> 
+                                    <option value="3"> 3 </option> 
+                                    <option value="4"> 4 </option> 
+                                    <option value="5"> 5 </option>  
+                                    </Control.select>
+                            </div>
+
+                            <div className="form-group">
+                                <Label htmlFor="author" md={2}>Author</Label>
+                                    <Control.text type="text" model=".author" id="author" name="author"
+                                        placeholder="Author"
+                                        className="form-control"
+                                        validators={{
+                                        required,
+                                        minLength: minLength(2),
+                                        maxLength: maxLength(15)
+                                        }}
+                                    />
+                                    <Errors
+                                        className="text-danger"
+                                        model=".author"
+                                        show="touched"
+                                        component="div"
+                                        messages={{
+                                            required: "Required",
+                                            minLength: "Must be at least 2 characters",
+                                            maxLength: "Must be less than 15 characters"
+                                        }}
+                                    />
+                            </div>
+                            <div className="form-group">
+                                <Label htmlFor="text" md={2}>Text</Label>
+                                    <Control.textarea md={6} model=".text" id="text" name="text"
+                                        placeholder="Text"
+                                        className="form-control"
+
+                                        />
+                                        <Errors
+                                            className="text-danger"
+                                            model=".author"
+                                            show="touched"
+                                            component="div"
+
+                                        />
+                            </div>
+                            <Button type="submit" color="primary">
+                                    Submit
+                                </Button>
+                            </LocalForm>
+
+                        </ModalBody>
+                    </Modal>
+                </div>
+            </React.Fragment>
+               
+        );
+    }
+}
+
+   function RenderCampsite({campsite}) {
         return (
             <div className="col-md-5 m-1">
                 <Card>
@@ -24,7 +135,7 @@ import { Link } from 'react-router-dom';
                 <div className="col-md-5 m-1">
                     <h4> Comments </h4>
                     {comments.map(comment => <div key={comment.id}> <p> {comment.text} <br/>-- {comment.author},   {new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', day: '2-digit'}).format(new Date(Date.parse(comment.date)))}</p></div>)}
-                    
+                    <CommentForm />
                 </div>
             );
         }

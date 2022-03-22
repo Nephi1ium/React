@@ -179,8 +179,10 @@ class Contact extends Component {
                                     />
                                 </Col>
                             </Row>
+                            <Button type="submit">Submit</Button>
                         </LocalForm>
                     </div>
+
                 </div>
             </div>
         );
